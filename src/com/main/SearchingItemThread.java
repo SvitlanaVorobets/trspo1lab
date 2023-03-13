@@ -6,9 +6,9 @@ public class SearchingItemThread implements Runnable{
     private final List<Integer> nums;
     private final int target;
 
-    private int startIndex;
+    private final int startIndex;
 
-    private int endIndex;
+    private final int endIndex;
 
     public SearchingItemThread(int target, int startIndex, int endIndex, List<Integer> nums){
         this.target = target;

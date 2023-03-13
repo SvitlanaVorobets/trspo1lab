@@ -76,22 +76,21 @@ public class WorkWithFile {
     public void saveAnswer(int numberOfThreads, List<Integer> list, int target){
         String res = "";
         long start = 0, end = 0;
+        SearchingItem item = new SearchingItem(list, target);
         System.out.println("How to find answer? 1 for simple, 2 for multithreading");
         switch (input.nextInt()) {
-            case 1:
+            case 1 -> {
                 start = System.currentTimeMillis();
-                SearchingItem item = new SearchingItem(list, target);
                 res = item.searchingNumber();
                 end = System.currentTimeMillis();
                 System.out.println(res);
-                break;
-            case 2:
+            }
+            case 2 -> {
                 start = System.currentTimeMillis();
                 findResultByMultithreading(numberOfThreads, list, target);
                 end = System.currentTimeMillis();
-                break;
-            default:
-                System.out.println("Sth is wrong");
+            }
+            default -> System.out.println("Sth is wrong");
         }
         NumberFormat formatter = new DecimalFormat("#0.00000");
         System.out.print("Execution time is " + formatter.format((end - start) / 1000d) + " seconds\n");
@@ -99,9 +98,8 @@ public class WorkWithFile {
         System.out.println("Write answer to file? Type y for yes, and n for no");
         input.nextLine();
         switch (input.nextLine()) {
-            case "y" -> saveInFile(res);
+            case "y" -> saveInFile(item.searchingNumber());
             case "n" -> {
-                break;
             }
             default -> System.out.println("Sth is wrong");
         }
