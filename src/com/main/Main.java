@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args){
         Scanner input = new Scanner(System.in);
         System.out.println("Write target");
-        int target = input.nextInt(); //create thread
+        int target = input.nextInt();
         int numberOfThreads = 5;
         WorkWithFile workWithFile = new WorkWithFile();
         List<Integer> list = workWithFile.createList();
