@@ -1,31 +1,24 @@
 package com.main;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class SearchingItemThread implements Runnable{
-    private final List<Integer> nums;
-    private final int target;
+    private int[] subarray;
+    private int k;
+    private int[] kthValues;
+    private int threadIndex;
 
-    private final int startIndex;
-
-    private final int endIndex;
-
-    public SearchingItemThread(int target, int startIndex, int endIndex, List<Integer> nums){
-        this.target = target;
-        this.startIndex = startIndex;
-        this.endIndex = endIndex;
-        this.nums = nums;
+    public SearchingItemThread(int[] subarray, int k, int[] kthValues, int threadIndex){
+        this.subarray = subarray;
+        this.k = k;
+        this.kthValues = kthValues;
+        this.threadIndex = threadIndex;
     }
 
     @Override
     public void run() {
-        boolean flag = false;
-        for(int i = startIndex; i < endIndex; i++){
-            if(nums.get(i) == target) {
-                System.out.println(nums.get(i) + " found at position " + i);
-                flag = true;
-            }
-        }
-        if(!flag) System.out.println("Not found");
+        int[] sortedSubarray = QuickSort.getSortedSubarray(subarray, 0, subarray.length - 1);
+        kthValues[threadIndex] = sortedSubarray[k - 1];
     }
 }

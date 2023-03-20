@@ -6,15 +6,22 @@ public class SearchingItem {
     private final List<Integer> nums;
     private final int target;
 
+
     public SearchingItem(List<Integer> nums, int target){
         this.nums = nums;
         this.target = target;
     }
 
-    public String searchingNumber(){
-        for(int i = 0; i < nums.size(); i++){
-            if(nums.get(i) == target) return nums.get(i) + " found at position " + i;
-        }
-        return "Not found";
+    public int searchingNumber(){
+        int[] sortedSubarray = QuickSort.getSortedSubarray(toIntArray(nums), 0, nums.size() - 1);
+        return sortedSubarray[target - 1];
+    }
+
+    int[] toIntArray(List<Integer> list)  {
+        int[] ret = new int[list.size()];
+        int i = 0;
+        for (Integer e : list)
+            ret[i++] = e;
+        return ret;
     }
 }
