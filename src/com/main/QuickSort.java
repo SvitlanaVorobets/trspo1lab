@@ -1,12 +1,14 @@
 package com.main;
 
+import java.util.List;
+
 public class QuickSort {
 
-    public static int[] getSortedSubarray(int[] arr, int low, int high) {
-        quickSort(arr, 0, arr.length - 1);
+    public static List<Integer> getSortedSubarray(List<Integer> arr, int low, int high) {
+        quickSort(arr, 0, arr.size() - 1);
         return arr;
     }
-    private static void quickSort(int[] arr, int low, int high) {
+    private static void quickSort(List<Integer> arr, int low, int high) {
         if (low < high) {
             int pi = partition(arr, low, high);
             quickSort(arr, low, pi - 1);
@@ -14,22 +16,22 @@ public class QuickSort {
         }
     }
 
-    private static int partition(int[] arr, int low, int high) {
-        int pivot = arr[high];
+    private static int partition(List<Integer> arr, int low, int high) {
+        int pivot = arr.get(high);
         int i = low - 1;
 
         for (int j = low; j < high; j++) {
-            if (arr[j] < pivot) {
+            if (arr.get(j) < pivot) {
                 i++;
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+                int temp = arr.get(i);
+                arr.set(i, arr.get(j));
+                arr.set(j, temp);
             }
         }
 
-        int temp = arr[i + 1];
-        arr[i + 1] = arr[high];
-        arr[high] = temp;
+        int temp = arr.get(i + 1);
+        arr.set(i + 1, arr.get(high));
+        arr.set(high, temp);
 
         return i + 1;
     }

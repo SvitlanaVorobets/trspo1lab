@@ -19,9 +19,9 @@ public class WorkWithFile {
         switch (input.nextInt()) {
             case 1 -> {
                 System.out.println("Set default options(1) or new(2)?");
-                int listLimit = 1000000;
+                int listLimit = 100000;
                 int start = 1;
-                int end = 2001000;
+                int end = 200100;
                 if (input.nextInt() == 2) {
                     System.out.println("Write limit: ");
                     listLimit = input.nextInt();
@@ -74,7 +74,9 @@ public class WorkWithFile {
     public void saveAnswer(int numberOfThreads, List<Integer> list, int target){
         int res;
         long start, end;
-        SearchingItem item = new SearchingItem(list, target);
+        List<Integer> cloned_list
+                = new ArrayList<>(list);
+        SearchingItem item = new SearchingItem(cloned_list, target);
         System.out.println("Simple");
 
         start = System.currentTimeMillis();
@@ -85,8 +87,9 @@ public class WorkWithFile {
 
         System.out.println("\nMultithreading");
         start = System.currentTimeMillis();
-        findResultByMultithreading(numberOfThreads, list, target);
+        res = findResultByMultithreading(numberOfThreads, list, target);
         end = System.currentTimeMillis();
+        System.out.println(res + " is at position " + target);
         outputTime(start, end);
 
         System.out.println("Write answer to file? Type y for yes, and n for no");
@@ -125,37 +128,23 @@ public class WorkWithFile {
         return tempList;
     }
 
-    public void findResultByMultithreading(int numberOfThreads, List<Integer> list, int target){
-//        int[][] subarrays = new int[numberOfThreads][];
-//        int subarraySize = list.size() / numberOfThreads;
-//        int remaining = list.size() % numberOfThreads;
-//        int index = 0;
-//        for (int i = 0; i < numberOfThreads; i++) {
-//            int size = subarraySize;
-//            if (i < remaining) {
-//                size++;
-//            }
-//            subarrays[i] = new int[size];
-//            for (int j = 0; j < size; j++) {
-//                subarrays[i][j] = list.get(index++);
-//            }
-//        }
+    public int findResultByMultithreading(int numberOfThreads, List<Integer> list, int target){
 
-        int[][] subarrays = new int[numberOfThreads][];
+        int[][] subArrays = new int[numberOfThreads][];
         int subarraySize = list.size() / numberOfThreads;
         for (int i = 0; i < numberOfThreads; i++) {
             int startIndex = i * subarraySize;
             int endIndex = (i == numberOfThreads - 1) ? list.size() : (i + 1) * subarraySize;
-            subarrays[i] = Arrays.copyOfRange(toIntArray(list), startIndex, endIndex);
+            subArrays[i] = Arrays.copyOfRange(list.stream().mapToInt(Integer::intValue).toArray(), startIndex, endIndex);
         }
 
         Thread[] searcher = new Thread[numberOfThreads];
-        int[] kthValues = new int[numberOfThreads];
-        int res = 0;
+        SearchingItemThread[] runnables = new SearchingItemThread[numberOfThreads];
+        List<Integer> medians = new ArrayList<>();
+
         for (int i = 0; i <= numberOfThreads - 1; i++) {
-            SearchingItemThread searchingItemThread;
-            searchingItemThread = new SearchingItemThread(subarrays[i], target, kthValues, i);
-            searcher[i] = new Thread(searchingItemThread);
+            runnables[i] = new SearchingItemThread(subArrays[i], 0, subArrays[i].length - 1, target);
+            searcher[i] = new Thread(runnables[i]);
 
             searcher[i].start();
         }
@@ -166,10 +155,27 @@ public class WorkWithFile {
                 e.printStackTrace();
             }
         }
-        System.out.println(Arrays.toString(kthValues));
-//        int[] sortedSubarray = QuickSort.getSortedSubarray(kthValues, 0, kthValues.length - 1);
 
-        System.out.println(res + " is at position " + target);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            medians.add(runnables[i].getMedian());
+        }
+
+        System.out.println(medians);
+
+        int left = 0;
+        int right = list.size() - 1;
+        while (left <= right) {
+            int index = partition(list, left, right);
+            if (index == target - 1) {
+                return list.get(index);
+            } else if (index < target - 1) {
+                left = index + 1;
+            } else {
+                right = index - 1;
+            }
+        }
+        return -1;
     }
 
     public void outputTime(long start, long end){
@@ -177,11 +183,25 @@ public class WorkWithFile {
         System.out.print("Execution time is " + formatter.format((end - start) / 1000d) + " seconds\n");
     }
 
-    int[] toIntArray(List<Integer> list)  {
-        int[] ret = new int[list.size()];
-        int i = 0;
-        for (Integer e : list)
-            ret[i++] = e;
-        return ret;
+    private static int partition(List<Integer> arr, int left, int right) {
+        int pivotIndex = left + (right - left) / 2;
+        int pivotValue = arr.get(pivotIndex);
+        swap(arr, pivotIndex, right);
+        int storeIndex = left;
+        for (int i = left; i < right; i++) {
+            if (arr.get(i) < pivotValue) {
+                swap(arr, i, storeIndex);
+                storeIndex++;
+            }
+        }
+        swap(arr, storeIndex, right);
+        return storeIndex;
     }
+
+    private static void swap(List<Integer> arr, int i, int j) {
+        int temp = arr.get(i);
+        arr.set(i, arr.get(j));
+        arr.set(j, temp);
+    }
+
 }

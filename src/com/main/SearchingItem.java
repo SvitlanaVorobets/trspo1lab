@@ -13,15 +13,7 @@ public class SearchingItem {
     }
 
     public int searchingNumber(){
-        int[] sortedSubarray = QuickSort.getSortedSubarray(toIntArray(nums), 0, nums.size() - 1);
-        return sortedSubarray[target - 1];
-    }
-
-    int[] toIntArray(List<Integer> list)  {
-        int[] ret = new int[list.size()];
-        int i = 0;
-        for (Integer e : list)
-            ret[i++] = e;
-        return ret;
+        List<Integer> sortedSubarray = QuickSort.getSortedSubarray(nums, 0, nums.size() - 1);
+        return sortedSubarray.get(target - 1);
     }
 }
