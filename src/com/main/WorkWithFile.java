@@ -140,7 +140,7 @@ public class WorkWithFile {
 
         Thread[] searcher = new Thread[numberOfThreads];
         SearchingItemThread[] runnables = new SearchingItemThread[numberOfThreads];
-        List<Integer> medians = new ArrayList<>();
+        List<Integer> newList = new ArrayList<>();
 
         for (int i = 0; i <= numberOfThreads - 1; i++) {
             runnables[i] = new SearchingItemThread(subArrays[i], 0, subArrays[i].length - 1, target);
@@ -149,6 +149,8 @@ public class WorkWithFile {
             searcher[i].start();
         }
         for (int i = 0; i < numberOfThreads; i++) {
+            List<Integer> item = Arrays.stream(subArrays[i]).boxed().toList();
+            newList.addAll(item);
             try {
                 searcher[i].join();
             } catch (InterruptedException e) {
@@ -156,19 +158,12 @@ public class WorkWithFile {
             }
         }
 
-
-        for (int i = 0; i < numberOfThreads; i++) {
-            medians.add(runnables[i].getMedian());
-        }
-
-        System.out.println(medians);
-
         int left = 0;
-        int right = list.size() - 1;
+        int right = newList.size() - 1;
         while (left <= right) {
-            int index = partition(list, left, right);
+            int index = partition(newList, left, right);
             if (index == target - 1) {
-                return list.get(index);
+                return newList.get(index);
             } else if (index < target - 1) {
                 left = index + 1;
             } else {
